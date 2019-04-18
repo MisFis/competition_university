@@ -1,35 +1,39 @@
 <template>
     <div class="code-container">
-        <div class="question-description">
-            <h1 >Задача</h1>
-            <div v-html="question.text"></div>
-        </div>
-        <div class="editor-wrapper">
-            <h1>
-                Код
-                <div class="button-group">
-                    <button @click="startNew">Сбросить</button>
-                </div>
-            </h1>
-            <div ref="editor" class="editor">
+        <h1 v-if="question.isDone" style="color: white">Задача уже выполнена</h1>
+        <template v-if="!question.isDone">
+            <div class="question-description">
+                <h1>Задача</h1>
+                <div v-html="question.text"></div>
             </div>
-        </div>
-        <div class="logger-wrapper">
-            <h1 class="logger-header">
-                Вывод
-                <div class="button-group">
-                    <button @click="clearLog">Очистить</button>
+            <div class="editor-wrapper">
+                <h1>
+                    Код
+                    <div class="button-group">
+                        <button @click="startNew">Сбросить</button>
+                    </div>
+                </h1>
+                <div ref="editor" class="editor">
                 </div>
-            </h1>
+            </div>
+            <div class="logger-wrapper">
+                <h1 class="logger-header">
+                    Вывод
+                    <div class="button-group">
+                        <button @click="clearLog">Очистить</button>
+                    </div>
+                </h1>
 
-            <div style="overflow: auto;height: 250px">
+                <div style="overflow: auto;height: 250px">
                 <pre v-for="log in logger">
                     {{log}}
                 </pre>
+                </div>
             </div>
-        </div>
-        <div style="position: absolute;bottom: 0;right: 0;height: 15px;width: 15px;background-color: transparent" @click="clicked += 1"></div>
-        <!--<div class="code-result" v-show="result">Результат исполнения: {{result}}</div>-->
+            <div style="position: absolute;bottom: 0;right: 0;height: 15px;width: 15px;background-color: transparent"
+                 @click="clicked += 1"></div>
+            <!--<div class="code-result" v-show="result">Результат исполнения: {{result}}</div>-->
+        </template>
     </div>
 </template>
 
@@ -39,6 +43,12 @@
     import 'ace-builds/src-noconflict/mode-javascript'
 
     const MAX_EVAL_TIMEOUT = 1000;
+
+    const isPrimitive = (val) => {
+        const currType = typeof val
+        return 'Boolean.Number.String.'.toLowerCase().indexOf(currType) > -1;
+
+    }
 
     export default {
         name: "PageQuestion",
@@ -63,12 +73,12 @@
             }
         },
         watch: {
-            question () {
+            question() {
                 this.clicked = 0
                 this.editor.setValue(this.question.code)
                 this.clearLog()
             },
-            clicked (val) {
+            clicked(val) {
                 if (val > 10) {
                     this.editor.setValue(this.question.rightCode)
                     this.clicked = 0
@@ -77,6 +87,7 @@
         },
         methods: {
             start() {
+                if (!this.question.isDone) {
                 const editor = this.editor
                 const worker = new Worker(this.getJSBlob(`${editor.getValue()} ${this.question.appendCode}`));
 
@@ -88,13 +99,15 @@
                     worker.postMessage(cheked); // Start the worker.
                     worker.onmessage = (e) => {
                         cheked = e.data
-                        this.result = e.data.result
+                        if (cheked.chek) {
+                            this.result = e.data.result
+                        }
                         e.data.logger.forEach(val => {
                             console.log(val)
                         })
                     }
                     setTimeout(() => {
-                        if (!cheked.chek) {
+                        if (!cheked.chek && cheked.result[0] !== 'error') {
                             return reject("Время исполнения вышло")
                         } else {
                             return resolve()
@@ -108,13 +121,14 @@
                     }, MAX_EVAL_TIMEOUT / 10)
                 })
                     .then(() => {
-                        console.log(this.result)
+                        this.checkCode()
                     })
                     .catch(e => {
                         console.log(e)
                     }).finally(() => {
                         clearInterval(interval)
                     });
+                }
             },
             jsWorkerCode(codeToInject) {
                 return `
@@ -133,9 +147,11 @@
                             ${codeToInject};
 
                             message.data.chek = true
-                            self.postMessage({chek:'true', result, logger});
+                            self.postMessage({chek: true, result, logger});
                         } catch (e) {
-                            console.log(e);
+
+                            console.log(e.message);
+                            self.postMessage({chek: false,result: ['error'], logger});
                         }
                 }`;
             },
@@ -144,11 +160,41 @@
 
                 return URL.createObjectURL(blob);
             },
-            startNew () {
+            startNew() {
                 this.editor.setValue(this.question.code)
             },
             clearLog() {
                 this.$store.commit('clearLogger')
+            },
+            checkCode() {
+                this.result = this.result.filter(item => {
+                    return item !== null && item !== undefined
+                })
+                if (this.result.length === 0) {
+                    console.log('Функция должна возвращать значение')
+                    return
+                }
+                let isTrue = true
+                this.question.test.forEach((val, index) => {
+                    if (isPrimitive(val)) {
+                        if (this.result[index] != val) {
+                            isTrue = false
+                        }
+                    } else if (val instanceof Array) {
+                        val.forEach((val1, i) => {
+                            if (this.result[index][i] != val1) {
+                                isTrue = false
+                            }
+                        })
+                    }
+                })
+                if (isTrue) {
+                    this.$store.dispatch('completeQuestion', this.id)
+                    console.log('👍Задача решена верна! Поздравляю!👍')
+                } else {
+                    console.log('Где то допущена ошибка!🤯')
+                }
+
             }
         },
         mounted() {

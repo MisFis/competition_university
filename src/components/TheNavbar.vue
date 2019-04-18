@@ -4,8 +4,8 @@
             <li class="nav-item" @click="$emit('showPanel')">Список задач</li>
             <li class="nav-item" :class="{disabled: !isPageMain}" @click="startCode()">Проверить</li>
         </ul>
-        <div class="scope-wrapper" >
-            <span class="nav-item">Текущий счет:</span>
+        <div class="scope-wrapper"  title="Ваш текущий счет">
+            <span class="scope-text" style="">🏅</span>
             <div class="current-scope">{{scope}}</div>
         </div>
     </nav>
@@ -61,8 +61,13 @@
     .scope-wrapper {
         display: flex;
         align-items: center;
-        width: 180px;
+        width: 90px;
         color: white
+    }
+
+    .scope-text {
+        color: white;
+        font-size: 1.8em
     }
 
     .nav-item {

@@ -3,6 +3,7 @@ export default [
         id: 1,
         name: `Заглавные буквы`,
         scope: 2,
+        isDone: false,
         text: `Напишите функцию ucFirst(str), которая возвращает строку str с заглавным первым символом`,
         test: ['Вася', 'Ива', ""],
         testSuite: ['вася', 'ива', null],
@@ -28,7 +29,9 @@ export default [
         id: 2,
         name: `Рекурсия`,
         scope: 3,
-        text: `Напишите функцию printList(list) при помощи рекурсии, которая возвращает value последовательно. По возможности использовать ESMAScript 6
+        isDone: false,
+        text: `Напишите функцию printList(list) при помощи рекурсии, которая возвращает value последовательно. По возможности использовать ESMAScript 6.
+                Пример JSON
                 <pre> 
                     {
                         value: 1,
@@ -45,21 +48,7 @@ export default [
                     }
                     </pre>
                 `,
-        test: [
-            {
-                value: 1,
-                next: {
-                    value: 2,
-                    next: {
-                        value: 3,
-                        next: {
-                            value: 4,
-                            next: null
-                        }
-                    }
-                }
-            }
-        ],
+        test: [[1, 2, 3, 4]],
         testSuite: [
             {
                 value: 1,
@@ -89,20 +78,21 @@ export default [
                     `,
         rightCode: `const printList = (list) => {
                               // ...Ваш код...
+                              let array = []
                           if (list) {
-                          let array = []
                               recursiveSearch (list, 'next', array)
                           }
+                          return array
                     }
                     
                     const recursiveSearch = (object, keyRecursive, newArray) => {
                    
                         Object.keys(object).forEach(item => {
-                        
+                               
                                 if(item === 'value') {
                                     newArray.push(object[item])
                                 }
-                                if (item === keyRecursive && object[item] != null) recursiveSearch(object[item], 'next')
+                                if (item === keyRecursive && object[item] != null) recursiveSearch(object[item], 'next', newArray)
                               }) 
                               }
                     

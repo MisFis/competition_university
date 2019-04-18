@@ -57,46 +57,6 @@
         background-color: #1F2D38;
     }
 
-    .question-container {
-        color: white;
-        position: absolute;
-        top: 65px;
-        z-index: 2000000;
-        height: calc(100% - 65px);
-        background: rgba(50, 50, 50, 0.64);
-        width: 100%;
-    }
-
-    .question-wrapper {
-        width: 30%;
-        background: #1F2D38;
-        height: 100%;
-    }
-
-    .question-items {
-        text-align: left;
-
-    }
-
-    .question-item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid #fffb17;
-        padding: 30px;
-        margin-bottom: 5px;
-    }
-
-    .question-scope {
-        margin: 0  0 0 auto;
-        background-color: #fffb17;
-        color: black;
-        height: 35px;
-        width: 35px;
-        border-radius: 15px;
-        text-align: center;
-        padding: 10px;
-    }
 
     .drop-right-enter-active, .drop-right-leave-active, .opacity-enter-active, .opacity-leave-active {
         transition: all .5s;
