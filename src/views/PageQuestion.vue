@@ -39,7 +39,6 @@
 
 <script>
     import ace from 'ace-builds/src-noconflict/ace.js'
-    import 'ace-builds/src-noconflict/theme-chrome'
     import 'ace-builds/src-noconflict/mode-javascript'
 
     const MAX_EVAL_TIMEOUT = 1000;
@@ -199,8 +198,9 @@
         },
         mounted() {
             this.editor = ace.edit(this.$refs.editor);
-            this.editor.setTheme("ace/theme/chrome");
+            // this.editor.setTheme("ace/theme/chrome");
             this.editor.session.setMode("ace/mode/javascript");
+            this.editor.session.setUseWorker(false);
             this.editor.setValue(this.question.code)
         }
 

@@ -2,7 +2,7 @@
     <nav class="nav-container">
         <ul class="nav-items">
             <li class="nav-item" @click="$emit('showPanel')">Список задач</li>
-            <li class="nav-item" :class="{disabled: !isPageMain}" @click="startCode()">Проверить</li>
+            <li class="nav-item" :class="{disabled: !isPageQuestion}" @click="startCode()">Проверить</li>
         </ul>
         <div class="scope-wrapper"  title="Ваш текущий счет">
             <span class="scope-text" style="">🏅</span>
@@ -18,7 +18,7 @@
             referal: Object
         },
         computed: {
-            isPageMain () {
+            isPageQuestion () {
                 return this.$route.name === 'PageQuestion'
             },
             scope() {
@@ -27,7 +27,7 @@
         },
         methods: {
             startCode () {
-                if (this.isPageMain) {
+                if (this.isPageQuestion) {
                     this.referal.start()
                 }
             }

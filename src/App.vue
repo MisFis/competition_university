@@ -25,7 +25,14 @@
         watch: {
             '$route': {
                 handler: function () {
-                    this.view = this.$refs.view
+                    const interval = setInterval(() => {
+                        if (this.$refs.view) {
+                            if (this.$refs.view !== this.view) {
+                                this.view = this.$refs.view
+                                clearInterval(interval)
+                            }
+                        }
+                    }, 100)
                 }
             }
         },
