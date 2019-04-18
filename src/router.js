@@ -4,6 +4,12 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
+function castRouteParams(route) {
+    return {
+        id: Number(route.params.id),
+    };
+}
+
 export default new Router({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -11,10 +17,13 @@ export default new Router({
     {
       path: '/',
       name: 'Main',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/PageMain.vue')
+      component: () => import(/* webpackChunkName: "main" */ './views/PageMain.vue')
+    },
+    {
+      path: '/question/:id',
+      name: 'PageQuestion',
+      props: castRouteParams,
+      component: () => import(/* webpackChunkName: "main" */ './views/PageQuestion.vue')
     }
   ]
 })

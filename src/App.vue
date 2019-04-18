@@ -1,20 +1,7 @@
 <template>
     <div id="app">
         <TheNavbar :referal="view" @showPanel="showPanel = !showPanel"/>
-        <transition name="opacity">
-            <div v-show="showPanel" class="question-container">
-                <transition name="drop-right">
-                <div class="question-wrapper" v-show="showPanel">
-                    <ul class="question-items">
-                        <li v-for="question in questions" class="question-item">
-                         <span>{{question.name}}</span>
-                         <span class="question-scope">{{question.scope}}</span>
-                        </li>
-                    </ul>
-                </div>
-                </transition>
-            </div>
-        </transition>
+        <TheQuestionWindowList v-show="showPanel" :showPanel="showPanel" @close="showPanel = !showPanel"/>
         <router-view ref="view"/>
     </div>
 </template>
@@ -22,9 +9,10 @@
 <script>
 
     import TheNavbar from "./components/TheNavbar";
+    import TheQuestionWindowList from "./components/TheQuestionWindowList";
 
     export default {
-        components: {TheNavbar},
+        components: {TheQuestionWindowList, TheNavbar},
         data() {
             return {
                 view: null,
@@ -32,9 +20,7 @@
             }
         },
         computed: {
-            questions() {
-                return this.$store.state.question
-            },
+
         },
         watch: {
             '$route': {
