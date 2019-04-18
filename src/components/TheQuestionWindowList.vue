@@ -87,4 +87,10 @@
         font-size: 1.3em;
         background-color: #fffb17;
     }
+
+    @media (max-width: 540px) {
+        .question-wrapper {
+            width: 80%;
+        }
+    }
 </style>
