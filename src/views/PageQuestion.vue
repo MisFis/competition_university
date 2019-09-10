@@ -1,9 +1,21 @@
 <template>
     <div class="code-container">
-        <h1 v-if="question.isDone" style="color: white">Задача уже выполнена</h1>
-        <template v-if="!question.isDone">
+
+        <ModalWindow v-if="question.isDone">
+            <template v-slot:header>
+                <h1>Задача уже выполнена</h1>
+            </template>
+            <span>Вы уже выполнили данную задачу, перейдите к другой задачи выбрав ее в разделе "Список задач"</span>
+        </ModalWindow>
+
+        <template>
             <div class="question-description">
-                <h1>Задача</h1>
+                <h1>
+                    Задача
+                    <div class="button-group">
+                        <button>{{timeExp}}</button>
+                    </div>
+                </h1>
                 <div v-html="question.text"></div>
             </div>
             <div class="editor-wrapper">
@@ -40,6 +52,8 @@
 <script>
     import ace from 'ace-builds/src-noconflict/ace.js'
     import 'ace-builds/src-noconflict/mode-javascript'
+    import 'ace-builds/src-noconflict/ext-language_tools'
+    import ModalWindow from "../components/ModalWindow";
 
     const MAX_EVAL_TIMEOUT = 1000;
 
@@ -51,6 +65,7 @@
 
     export default {
         name: "PageQuestion",
+        components: {ModalWindow},
         props: {
             id: {
                 type: Number
@@ -60,7 +75,9 @@
             return {
                 editor: null,
                 result: null,
-                clicked: 0
+                clicked: 0,
+                timeExper: 0,
+                interval: null
             }
         },
         computed: {
@@ -69,6 +86,9 @@
             },
             logger() {
                 return this.$store.state.logger
+            },
+            timeExp () {
+                return  this.question.time - this.timeExper
             }
         },
         watch: {
@@ -198,12 +218,24 @@
         },
         mounted() {
             this.editor = ace.edit(this.$refs.editor);
+            this.editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: false
+            });
             // this.editor.setTheme("ace/theme/chrome");
             this.editor.session.setMode("ace/mode/javascript");
             this.editor.session.setUseWorker(false);
             this.editor.setValue(this.question.code)
-        }
 
+           this.interval = setInterval(() => {
+                this.timeExper += 1
+            }, 1000)
+        },
+
+        beforeDestroy () {
+            clearInterval(this.interval)
+        }
     }
 </script>
 

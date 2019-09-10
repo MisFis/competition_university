@@ -25,9 +25,22 @@
         props: {
             showPanel: Boolean
         },
+        data () {
+            return {
+
+            }
+        },
         computed: {
             questions() {
-                return this.$store.state.questions
+                return this.$store.state.questions.sort((a, b) =>  {
+                    if (a.scope > b.scope) {
+                        return 1
+                    }
+                    if (a.scope < b.scope) {
+                        return -1;
+                    }
+                    return 0
+                })
             }
         },
         methods: {
@@ -35,6 +48,9 @@
                 this.$router.push({name: 'PageQuestion', params: {id}})
                 this.$emit('close')
             }
+        },
+        created () {
+
         }
     }
 </script>
